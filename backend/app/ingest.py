@@ -1,10 +1,10 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 from embeddings.embedder import embed_text
+from vectorstore.chroma_store import add_document
+import uuid
 
 router = APIRouter()
-
-DOCUMENT_STORE = []
 
 class IngestRequest(BaseModel):
     text: str
@@ -15,14 +15,12 @@ def ingest_document(request: IngestRequest):
         return {"status": "error", "message": "Empty document"}
 
     embedding = embed_text(request.text)
+    doc_id = str(uuid.uuid4())
 
-    DOCUMENT_STORE.append({
-        "text": request.text,
-        "embedding": embedding
-    })
+    add_document(doc_id, request.text, embedding)
 
     return {
         "status": "success",
-        "embedding_dim": len(embedding),
-        "documents_ingested": len(DOCUMENT_STORE)
+        "doc_id": doc_id,
+        "embedding_dim": len(embedding)
     }
