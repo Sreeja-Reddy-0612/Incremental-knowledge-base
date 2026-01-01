@@ -1,7 +1,7 @@
 import { ingestDocument } from "../api/ingest";
 import { useState } from "react";
 
-export default function UploadDocs() {
+export default function UploadDocs({ onDocIngested }) {
   const [text, setText] = useState("");
   const [status, setStatus] = useState("");
 
@@ -10,8 +10,12 @@ export default function UploadDocs() {
 
     setStatus("Uploading...");
     try {
-      await ingestDocument(text);
-      setStatus("Document ingested successfully.");
+      const response = await ingestDocument(text);
+
+      // ⬅️ THIS IS THE IMPORTANT PART
+      onDocIngested(response.doc_id);
+
+      setStatus(`Document ingested (doc_id: ${response.doc_id})`);
       setText("");
     } catch {
       setStatus("Backend not running yet.");

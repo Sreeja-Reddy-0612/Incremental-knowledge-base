@@ -11,10 +11,9 @@ class QueryRequest(BaseModel):
 @router.post("/query")
 def query_knowledge_base(request: QueryRequest):
     query_embedding = embed_text(request.question)
-
     results = query_similar(query_embedding)
 
-    if not results["documents"]:
+    if results is None:
         return {"answer": "No relevant information found."}
 
     best_chunk = results["documents"][0][0]
