@@ -17,8 +17,11 @@ def query_knowledge_base(request: QueryRequest):
     if not results["documents"]:
         return {"answer": "No relevant information found."}
 
-    top_doc = results["documents"][0][0]
+    best_chunk = results["documents"][0][0]
+    metadata = results["metadatas"][0][0]
 
     return {
-        "answer": top_doc
+        "answer": best_chunk,
+        "source_doc": metadata["doc_id"],
+        "chunk_index": metadata["chunk_index"]
     }
